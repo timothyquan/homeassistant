@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: homeassistant
+  name: homeassistant
+spec:
+  revisionHistoryLimit: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homeassistant
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: homeassistant
+    spec:
+      containers:
+        - image: homeassistant/home-assistant
+          name: homeassistant
+          volumeMounts:
+            - mountPath: "/config"
+              name: configvol
+            - mountPath: /etc/localtime
+              name: timezonevol
+              readOnly: true
+          ports:
+            - containerPort: 8123
+              protocol: TCP
+          resources: {}
+      volumes:
+        - name: configvol
+          persistentVolumeClaim:
+            claimName: homeassistant-pvc
+        - name: timezonevol
+          hostPath:
+            path: /etc/localtime
+            type: File
+
+status: {}
